@@ -34,14 +34,14 @@ The test reads environment variables directly. A `.env` file is also loaded auto
 pytest -m smoke -v
 ```
 
-Run the two scenarios in parallel:
+Run the three UI scenarios (Dashboard, Unit 1 and Unit 2) in parallel:
 
 ```bash
-python -m pytest -n 2 --dist=load -m smoke -v
+python -m pytest -n 3 --dist=load -m smoke -v
 ```
 
 Use `-n 4` when the suite grows and the browser server has sufficient capacity.
-With two tests, at most two workers execute tests concurrently.
+With three UI tests, at most three workers execute UI tests concurrently.
 
 ## Shared authentication
 
@@ -60,7 +60,8 @@ when using `--junitxml=artifacts/results.xml`.
 Snapshot reuse applies only within one run. A rejected or expired session fails
 setup explicitly; there is no automatic login retry. Local progress changes remain
 isolated between browsers; server-side changes still affect the shared account.
-The Dashboard and Unit 1 assertions retain their existing expected progress.
+Expected progress: Dashboard 9% and 16 of 129 words; Unit 1 19% and 2 of 14
+sections; Unit 2 11% and 2 of 18 sections.
 This suite checks authenticated pages; the form login is validated during setup.
 
 Check collection without opening a browser:

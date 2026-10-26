@@ -9,7 +9,7 @@ def test_student_can_open_first_unit_and_see_key_ideas(
     authenticated_driver: WebDriver,
 ) -> None:
     unit_page = UnitPage(authenticated_driver)
-    unit_page.open_first_unit()
+    unit_page.open()
     unit_page.should_show_overview()
     unit_page.open_key_ideas()
     unit_page.should_show_key_ideas()

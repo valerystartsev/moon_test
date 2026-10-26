@@ -8,7 +8,23 @@ from selenium.webdriver.support.ui import WebDriverWait
 
 
 class UnitPage:
-    UNIT_LINK = (By.CSS_SELECTOR, "a[href='/unit/1']")
+    UNIT_NUMBER = 1
+    TITLE = "Markets & Monopolies"
+    SUBTITLE = "How buyers, sellers, and companies shape the economy"
+    INTRODUCTION = (
+        "Learn key business terms about markets, competition, and monopolies. "
+        "Understand how companies compete and what happens when one company controls everything."
+    )
+    TABS = (
+        "Intro", "Key Ideas", "Market Types", "Dictionary", "Comics",
+        "Reading", "Questions", "Media Lab", "Media Quest", "Crossword",
+        "Complaint Path", "Dialogue",
+    )
+    DEFINITIONS = (
+        ("Market", "A place where buyers and sellers meet to trade goods and services."),
+        ("Competition", "Companies fight to get customers by offering better products or lower prices."),
+        ("Monopoly", "One company controls the whole market. There is no competition."),
+    )
     KEY_IDEAS_TAB = (
         By.CSS_SELECTOR,
         "main a[href='#section-keyideas']",
@@ -18,9 +34,11 @@ class UnitPage:
         self.driver = driver
         self.wait = WebDriverWait(driver, timeout)
 
-    def open_first_unit(self) -> None:
-        self.wait.until(EC.element_to_be_clickable(self.UNIT_LINK)).click()
-        self.wait.until(lambda driver: urlparse(driver.current_url).path == "/unit/1")
+    def open(self) -> None:
+        path = f"/unit/{self.UNIT_NUMBER}"
+        link = (By.CSS_SELECTOR, f"a[href='{path}']")
+        self.wait.until(EC.element_to_be_clickable(link)).click()
+        self.wait.until(lambda driver: urlparse(driver.current_url).path == path)
 
     def open_key_ideas(self) -> None:
         self.wait.until(EC.element_to_be_clickable(self.KEY_IDEAS_TAB)).click()
@@ -33,46 +51,36 @@ class UnitPage:
         )
         self.wait.until(
             EC.visibility_of_any_elements_located(locator),
-            message=f"Unit 1 should display {text!r}",
+            message=f"Unit {self.UNIT_NUMBER} should display {text!r}",
         )
 
     def should_show_overview(self) -> None:
         for text in (
             "Dashboard",
-            "Unit 1",
-            "Markets & Monopolies",
-            "How buyers, sellers, and companies shape the economy",
+            f"Unit {self.UNIT_NUMBER}",
+            self.TITLE,
+            self.SUBTITLE,
         ):
             self._should_show_text(text)
-        for tab in (
-            "Intro", "Key Ideas", "Market Types", "Dictionary", "Comics",
-            "Reading", "Questions", "Media Lab", "Media Quest", "Crossword",
-            "Complaint Path", "Dialogue",
-        ):
+        for tab in self.TABS:
             locator = (
                 By.XPATH,
                 f"//main//a[starts-with(@href, '#section-')][.//span[normalize-space()='{tab}']]",
             )
             self.wait.until(
                 EC.visibility_of_element_located(locator),
-                message=f"Unit 1 navigation should display {tab!r}",
+                message=f"Unit {self.UNIT_NUMBER} navigation should display {tab!r}",
             )
 
     def should_show_key_ideas(self) -> None:
         for text in (
             "Core concepts of this unit",
             "What is this unit about?",
-            "Learn key business terms about markets, competition, and monopolies. "
-            "Understand how companies compete and what happens when one company controls everything.",
+            self.INTRODUCTION,
             "Three Key Ideas",
         ):
             self._should_show_text(text)
-        definitions = (
-            ("Market", "A place where buyers and sellers meet to trade goods and services."),
-            ("Competition", "Companies fight to get customers by offering better products or lower prices."),
-            ("Monopoly", "One company controls the whole market. There is no competition."),
-        )
-        for title, definition in definitions:
+        for title, definition in self.DEFINITIONS:
             card = (
                 By.XPATH,
                 f"//main//*[not(*) and normalize-space()='{title}']"
@@ -109,6 +117,6 @@ class UnitPage:
             self.wait.until(lambda _: actual_state() == expected)
         except TimeoutException as error:
             raise AssertionError(
-                f"Unit 1 progress (percentage, sections, Key Ideas Done): "
+                f"Unit {self.UNIT_NUMBER} progress (percentage, sections, Key Ideas Done): "
                 f"expected {expected!r}, got {actual_state()!r}"
             ) from error
