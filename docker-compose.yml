@@ -1,0 +1,19 @@
+services:
+  moon:
+    image: aerokube/moon:2.8.2
+    ports:
+      - "4444:4444"
+      - "8080:8080"
+    volumes:
+      - ./config:/etc/moon
+    environment:
+      - MOON_BROWSER_LIMIT=4
+
+  moon-ui:
+    image: aerokube/moon-ui:2.8.2
+    ports:
+      - "8181:8080"
+    depends_on:
+      - moon
+    environment:
+      - MOON_URL=http://moon:8080
